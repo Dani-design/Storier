@@ -14,7 +14,7 @@ pipe = StableDiffusionPipeline.from_pretrained(model_id, scheduler=scheduler, to
 pipe = pipe.to("cuda")
 
 # Set the directory where images will be saved
-image_dir = "C:/Users/danie/Desktop/university_master/tool app/client/src/generated_images"
+image_dir = "../client/src/generated_images"
 os.makedirs(image_dir, exist_ok=True)
 
 # Stablediffusion API route
