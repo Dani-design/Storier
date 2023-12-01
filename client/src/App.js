@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "./index.css";
 
 function App() {
   const [inputString, setInputString] = useState("");
@@ -37,6 +38,7 @@ function App() {
         setResultImages(data.image_responses);
         console.log(data);
         setIsLoading(false);
+        setInputString("");
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -45,20 +47,14 @@ function App() {
   };
 
   return (
-    <div>
-      <div>
-        <label>
-          Input String:
-          <input type="text" value={inputString} onChange={handleInputChange} />
-        </label>
-        <button onClick={handleStableDiffusion}>Generate Images</button>
-      </div>
-      <div>
+    <div id="container">
+      <div id="images">
         {isLoading ? (
           <p>Loading...</p>
         ) : resultImages.length > 0 ? (
           resultImages.map(({ sentence, image_path }, index) => (
             <div key={index}>
+              <span>{sentence}</span>
               <ImageComponent
                 imagePath={image_path}
                 altText={`Generated Image ${index + 1}`}
@@ -66,6 +62,18 @@ function App() {
             </div>
           ))
         ) : null}
+      </div>
+      <div id="generate">
+        <label>
+          <p>Input Prompt</p>
+          <input
+            type="text"
+            value={inputString}
+            onChange={handleInputChange}
+            placeholder="write a prompt"
+          />
+        </label>
+        <button onClick={handleStableDiffusion}>Generate Images</button>
       </div>
     </div>
   );
