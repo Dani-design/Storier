@@ -23,18 +23,13 @@ div p {
 }
 
 span {
-  padding-left: 15px;
+  margin-left: 15px;
   margin-top: 200px;
   float: right;
   max-width: 28px;
   padding-right: 40px;
 }
 
-div#generate {
-  /* margin-left: 25px; */
-  /* margin-top: 530px; */
-  margin-top: 20px;
-}
 input[type="text"],
 select {
   width: 95%;
@@ -56,6 +51,13 @@ button {
   border-radius: 4px;
   cursor: pointer;
 }
+button#refreshStory {
+  background-color: white;
+  color: rgb(136, 136, 136);
+  padding: 0;
+  margin-bottom: 15px;
+  margin-top: 0;
+}
 */ html,
 body {
   height: 100%;
@@ -73,6 +75,7 @@ body {
 div#images {
   overflow-y: auto;
   height: 526px;
+  width: 606px;
 }
 
 div#container {
