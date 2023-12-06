@@ -23,11 +23,13 @@ div p {
 }
 
 span {
-  margin-left: 15px;
-  margin-top: 200px;
+  margin-left: 10px;
+  height: 500px;
   float: right;
   max-width: 28px;
-  padding-right: 40px;
+  padding-right: 60px;
+  display: inline-grid;
+  align-items: center;
 }
 
 input[type="text"],
@@ -75,7 +77,8 @@ body {
 div#images {
   overflow-y: auto;
   height: 526px;
-  width: 606px;
+  width: 630px;
+  overflow-x: hidden;
 }
 
 div#container {
