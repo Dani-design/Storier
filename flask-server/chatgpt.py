@@ -5,6 +5,7 @@ import os  # Add the missing import
 import re
 from diffusers import StableDiffusionPipeline, EulerDiscreteScheduler
 from transformers import pipeline
+import openai 
 
 app = Flask(__name__)
 CORS(app)
@@ -14,14 +15,13 @@ model_id = "stabilityai/stable-diffusion-2"
 scheduler = EulerDiscreteScheduler.from_pretrained(model_id, subfolder="scheduler")
 pipe = StableDiffusionPipeline.from_pretrained(model_id, scheduler=scheduler, torch_dtype=torch.float16)
 pipe = pipe.to("cuda:3")
-
-# Initialize the zephyr model for text generation
-zephyr_pipe = pipeline("text-generation", model="HuggingFaceH4/zephyr-7b-beta", torch_dtype=torch.bfloat16, device_map=3)
+openai.api_key = 'API KEY'
 
 # Set the directory where images will be saved
 image_dir = "../client/src/generated_images"
 os.makedirs(image_dir, exist_ok=True)
 
+messages = [{"role": "system", "content": "You are a storyteller."}]
 # Stablediffusion API route
 @app.route("/stablediffusion", methods=["POST"])
 def stablediffusion():
@@ -37,31 +37,18 @@ def stablediffusion():
                 prompt += '.'
 
               # Additional text about adding 2 sentences in the story
-            additional_text = "Continue the story with 2 short sentences with a maximum of 10 words each."
+            additional_text = "<- user sentence. Include the user sentence and then continue the story with ONLY THREE and not more than three short sentences with a maximum of 10 words each. Numerate sentences and include in the response first user sentences."
+            messages.append({"role": "user", "content": f"{prompt} {additional_text}"})
 
-            # Define system and user messages for zephyr
-            messages = [
-                {"role": "system", "content": "You are a storyteller for fictional stories"},
-                {"role": "user", "content": f"{prompt} {additional_text}"},
-            ]
+            answers = openai.chat.completions.create( 
+                    model="gpt-3.5-turbo", 
+                    messages=messages 
+                ) 
+            print(answers.choices[0].message.content)
 
-            # Apply chat template to format messages for zephyr
-            prompt_zephyr = zephyr_pipe.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-
-            # Generate additional text with zephyr
-            generated_text = zephyr_pipe(prompt_zephyr, max_new_tokens=256, do_sample=True, temperature=0.7, top_k=50, top_p=0.95)[0]["generated_text"]
-           # Remove any text that includes and is before the "</s>" token
-            generated_text = generated_text.split("<|assistant|>")[-1]
-            print(generated_text)
-            generated_text = re.sub(r'\n\d*', ' ', generated_text)
-            generated_text = re.sub(r'[^A-Za-z0-9.,!?\'"\s]+', '', generated_text)
-            print(generated_text)
-
-             # Combine user input and AI-generated text into a list of sentences
-            combined_text = f"{prompt} {generated_text}"
-
+            answers = answers.choices[0].message.content
             # Split the combined text into sentences based on "."
-            sentences = combined_text.split(".")
+            sentences = re.findall(r'\d+\.\s([^\n]+)', answers)
             print(sentences)
 
             # Process each sentence and generate an image
@@ -69,10 +56,6 @@ def stablediffusion():
             for i, sentence in enumerate(sentences):
                 # Skip empty sentences
                 if sentence.strip() and len(sentence) > 1:
-                    if "Merlin" in sentence:
-                        # Insert "(young male wizard with blue hair)" after "Merlin" for consisteny check
-                        sentence = sentence.replace("Merlin", "Merlin (young male wizard with blue hair)")
-
                     cleaned_sentence = sentence.replace(" ", "_")
                     # Call stablediffusion and save the resulting image
                     image = pipe(sentence).images[0]

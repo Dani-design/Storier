@@ -69,15 +69,34 @@ function App() {
         {existingImagesLoaded && resultImages.length === 0 ? (
           <p>No new images. Generate some using the button above.</p>
         ) : (
-          resultImages.map(({ sentence, image_path }, index) => (
-            <div key={index}>
-              <span>{sentence}</span>
-              <ImageComponent
-                imagePath={image_path}
-                altText={`Generated Image ${index + 1}`}
-              />
-            </div>
-          ))
+          //    Used without checking in text for merlin
+          //     resultImages.map(({ sentence, image_path }, index) => (
+          //       <div key={index}>
+          //         <span>{sentence}</span>
+          //         <ImageComponent
+          //           imagePath={image_path}
+          //           altText={`Generated Image ${index + 1}`}
+          //         />
+          //       </div>
+          //     ))
+          //   )}
+          // </div>
+          resultImages.map(({ sentence, image_path }, index) => {
+            const cleanedSentence = sentence.replace(
+              "(young male wizard with blue hair)",
+              ""
+            );
+
+            return (
+              <div key={index}>
+                <span>{cleanedSentence}</span>
+                <ImageComponent
+                  imagePath={image_path}
+                  altText={`Generated Image ${index + 1}`}
+                />
+              </div>
+            );
+          })
         )}
       </div>
       <div id="generate">
