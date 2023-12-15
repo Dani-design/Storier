@@ -3,7 +3,7 @@ from flask_cors import CORS
 import torch
 import os  # Add the missing import
 import re
-from diffusers import StableDiffusionPipeline, EulerDiscreteScheduler
+from diffusers import DiffusionPipeline
 from transformers import pipeline
 import openai 
 
@@ -11,9 +11,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Initialize the model only once when the server starts
-model_id = "stabilityai/stable-diffusion-2"
-scheduler = EulerDiscreteScheduler.from_pretrained(model_id, subfolder="scheduler")
-pipe = StableDiffusionPipeline.from_pretrained(model_id, scheduler=scheduler, torch_dtype=torch.float16)
+pipe = DiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16, use_safetensors=True, variant="fp16")
 pipe = pipe.to("cuda:3")
 openai.api_key = 'API KEY'
 
