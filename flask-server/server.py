@@ -61,7 +61,16 @@ def stablediffusion():
             # Split the combined text into sentences based on "."
             sentences = combined_text.split(".")
             print(sentences)
-
+            # digital art style
+            style ="concept art, digital artwork, illustrative, painterly, matte painting, highly detailed"
+            # fantasy art style
+            # style ="breathtaking, fantasy art, award-winning, professional, highly detailed"
+            # mario game style
+            # style= "Super Mario style . vibrant, cute, cartoony, fantasy, playful, reminiscent of Super Mario series"
+            # rpg game style
+            #style= "role playing fiction game art asset"
+            #testin style
+            #style="stained glass"
             # Process each sentence and generate an image
             image_responses = []
             for i, sentence in enumerate(sentences):
@@ -73,7 +82,8 @@ def stablediffusion():
 
                     cleaned_sentence = sentence.replace(" ", "_")
                     # Call stablediffusion and save the resulting image
-                    image = pipe(sentence).images[0]
+                    image_with_style=f"{style} {sentence}"
+                    image = pipe(image_with_style).images[0]
                     image_path = os.path.join(image_dir, f"{cleaned_sentence}_V2.png")
                     print("Saving image to:", image_path)
                     image.save(image_path)
