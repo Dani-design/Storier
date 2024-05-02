@@ -11,7 +11,7 @@ CORS(app)
 
 # Initialize the model only once when the server starts
 pipe = DiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16, use_safetensors=True, variant="fp16")
-pipe = pipe.to("cuda:3")
+pipe = pipe.to("cuda:7")
 
 # Initialize the zephyr model for text generation
 zephyr_pipe = pipeline("text-generation", model="HuggingFaceH4/zephyr-7b-beta", torch_dtype=torch.bfloat16, device_map=3)
@@ -62,15 +62,15 @@ def stablediffusion():
             sentences = combined_text.split(".")
             print(sentences)
             # digital art style
-            style ="concept art, digital artwork, illustrative, painterly, matte painting, highly detailed"
+            # style ="concept art, digital artwork, illustrative, painterly, matte painting, highly detailed"
             # fantasy art style
             # style ="breathtaking, fantasy art, award-winning, professional, highly detailed"
             # mario game style
             # style= "Super Mario style . vibrant, cute, cartoony, fantasy, playful, reminiscent of Super Mario series"
             # rpg game style
-            #style= "role playing fiction game art asset"
+            style= "role playing fiction game art asset"
             #testin style
-            #style="stained glass"
+            # style="stained glass"
             # Process each sentence and generate an image
             image_responses = []
             for i, sentence in enumerate(sentences):

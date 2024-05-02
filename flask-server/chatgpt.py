@@ -3,6 +3,7 @@ from flask_cors import CORS
 import torch
 import os  # Add the missing import
 import re
+# from diffusers import StableDiffusionPipeline, EulerDiscreteScheduler
 from diffusers import DiffusionPipeline
 from transformers import pipeline
 import openai 
@@ -11,6 +12,9 @@ app = Flask(__name__)
 CORS(app)
 
 # Initialize the model only once when the server starts
+# model_id = "stabilityai/stable-diffusion-2"
+# scheduler = EulerDiscreteScheduler.from_pretrained(model_id, subfolder="scheduler")
+# pipe = StableDiffusionPipeline.from_pretrained(model_id, scheduler=scheduler, torch_dtype=torch.float16)
 pipe = DiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16, use_safetensors=True, variant="fp16")
 pipe = pipe.to("cuda:3")
 openai.api_key = 'API KEY'
@@ -48,16 +52,7 @@ def stablediffusion():
             # Split the combined text into sentences based on "."
             sentences = re.findall(r'\d+\.\s([^\n]+)', answers)
             print(sentences)
-            # digital art style
-            style ="concept art, digital artwork, illustrative, painterly, matte painting, highly detailed"
-            # fantasy art style
-            # style ="breathtaking, fantasy art, award-winning, professional, highly detailed"
-            # mario game style
-            # style= "Super Mario style . vibrant, cute, cartoony, fantasy, playful, reminiscent of Super Mario series"
-            # rpg game style
-            #style= "role playing fiction game art asset"
-            #testin style
-            #style="stained glass"
+
             # Process each sentence and generate an image
             image_responses = []
             for i, sentence in enumerate(sentences):
@@ -65,8 +60,7 @@ def stablediffusion():
                 if sentence.strip() and len(sentence) > 1:
                     cleaned_sentence = sentence.replace(" ", "_")
                     # Call stablediffusion and save the resulting image
-                    image_with_style=f"{style} {sentence}"
-                    image = pipe(image_with_style).images[0]
+                    image = pipe(sentence).images[0]
                     image_path = os.path.join(image_dir, f"{cleaned_sentence}_V2.png")
                     print("Saving image to:", image_path)
                     image.save(image_path)
